@@ -1,5 +1,6 @@
 const Product = require('../models/product')
-const url = require('url');
+const path = require('path')
+const dataFilePath = path.join(path.dirname(process.mainModule.filename),'data','producrs.json');
 let editID;
 function getIdFromUrl(reqUrl){
 
@@ -21,8 +22,14 @@ exports.postNewProduct = (req, res, next) => {
     product.save()
     res.redirect('/');
 }
+exports.deleteProduct = (req,res,next)=>{
+  const id = getIdFromUrl(req)
+  Product.delete(id)
+  res.redirect('/admin/products')
+}
 exports.getProductsAdmin = (req,res,next) =>{
-    Product.fetchAll(products=>{
+    Product.fetchAll(dataFilePath, products=>{
+        
         res.render('admin/products', {
           prods: products,
           pageTitle: 'Admin Products',
@@ -30,16 +37,11 @@ exports.getProductsAdmin = (req,res,next) =>{
         })
       })
 }
-exports.deleteProduct = (req,res,next)=>{
-  const id = getIdFromUrl(req)
-  Product.delete(id)
-  res.redirect('/admin/products')
-}
+
 exports.getEditProduct = (req,res,next)=>{
   const id = getIdFromUrl(req)
-  editID = id;
-  console.log(id)
-  Product.fetchAll(products=>{
+  editID = Number(id);
+  Product.fetchAll(dataFilePath,products=>{
     res.render('admin/edit-product', {
       product: products.find(product=>product.id==id),
       pageTitle: 'Edit Product',

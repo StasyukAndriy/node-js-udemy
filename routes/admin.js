@@ -13,10 +13,11 @@ router.get('/add-product', adminController.showAddProduct);
 router.post('/add-product', adminController.postNewProduct);
 
 router.get('/products', adminController.getProductsAdmin)
-
-router.get('/delete/:id', adminController.deleteProduct)
 router.get('/edit/:id', adminController.getEditProduct)
-// router.post('/edit', adminController.postEditProduct)
+router.post('/edit', adminController.postEditProduct)
+router.get('/delete/:id', adminController.deleteProduct)
+
+
 
 module.exports = router;
 

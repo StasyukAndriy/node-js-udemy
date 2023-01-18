@@ -1,8 +1,10 @@
+const Cart = require('../models/cart');
 const Product = require('../models/product')
-
+const path = require('path')
+const dataFilePath = path.join(path.dirname(process.mainModule.filename),'data','producrs.json');
 
 exports.showProducts = (req, res, next) => {
-     Product.fetchAll(products=>{
+     Product.fetchAll(dataFilePath,products=>{
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'Shop',
@@ -16,7 +18,7 @@ exports.showProducts = (req, res, next) => {
   }
 
 exports.getIndex = (req,res,next) =>{
-    Product.fetchAll(products=>{
+    Product.fetchAll(dataFilePath, products=>{
         res.render('shop/index', {
           prods: products,
           pageTitle: 'Index',
@@ -32,8 +34,12 @@ exports.getCart = (req,res,next)=>{
         })
      
 }
-exports.postCart = (res,req,next)=>{
-  console.log(12131)
+exports.postCart = (req,res,next)=>{
+  const id = req.body.productId
+  Product.getProductById(id,product=>{
+    Cart.addProduct(id,  product.price)
+  })
+  
   res.redirect('/')
 }
 exports.getCheckout= (req,res,next)=>{
@@ -45,7 +51,7 @@ exports.getCheckout= (req,res,next)=>{
 
 exports.getProduct = (req,res,next)=>{
 
-  Product.fetchAll(products=>{
+  Product.fetchAll(dataFilePath, products=>{
     res.render('shop/product-details', {
       pageTitle: 'Product Details',
       product: products.find(product=>product.id==req.params.id),

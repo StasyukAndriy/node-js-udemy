@@ -2,9 +2,9 @@
 const fs = require('fs');
 const path = require('path');
 const dataFilePath = path.join(path.dirname(process.mainModule.filename),'data','producrs.json');
-const getProducts = (cb)=>{
-   fs.readFile(dataFilePath, (err, content)=>{
-      if(err||!content[0]){
+const getProducts = (path, cb)=>{
+   fs.readFile(path, (err, content)=>{
+      if(err){
           return cb([]);
       }
      
@@ -31,7 +31,7 @@ module.exports = class Product{
         this.description = description
      }
      save(){
-      getProducts(products=>{
+      getProducts(dataFilePath,products=>{
          products.push(this)
          fs.writeFile(dataFilePath, JSON.stringify(products), err=>{
           console.log(err)
@@ -39,7 +39,8 @@ module.exports = class Product{
       })
      }
      static delete(id){
-        getProducts(products=>{
+        getProducts(dataFilePath, products=>{
+         
          const newProds = products.filter(product=> product.id!=id)
          fs.writeFile(dataFilePath, JSON.stringify(newProds), err=>{
             console.log(err)
@@ -49,14 +50,13 @@ module.exports = class Product{
 
      static edit(id, title, url, price, description){
          const editedProduct = {id, title, url, price, description}
-         getProducts(products=>{
+         getProducts(dataFilePath,products=>{
             const newProds = products.map(product=>{
                console.log(id, product.id)
                if(id==product.id){
                   return editedProduct
-               } else{
+               } 
                   return product
-               }
             })
             fs.writeFile(dataFilePath, JSON.stringify(newProds), err=>{
                console.log(err)
@@ -65,8 +65,13 @@ module.exports = class Product{
         
      }
 
-
-     static fetchAll(setProducts){
-         getProducts(setProducts)
+     static getProductById(id,cb) {
+     
+          Product.fetchAll(products=>{
+            cb(products.find(product=>product.id==id))
+         })
+     }
+     static fetchAll(path, setProducts){
+         getProducts(path, setProducts)
      }
 }
