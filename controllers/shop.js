@@ -2,7 +2,7 @@ const Cart = require('../models/cart');
 const Product = require('../models/product')
 const path = require('path')
 const dataFilePath = path.join(path.dirname(process.mainModule.filename),'data','producrs.json');
-
+const cartFilePath = path.join(path.dirname(process.mainModule.filename),'data','cart.json')
 exports.showProducts = (req, res, next) => {
      Product.fetchAll(dataFilePath,products=>{
       res.render('shop/product-list', {
@@ -28,10 +28,14 @@ exports.getIndex = (req,res,next) =>{
 }
 
 exports.getCart = (req,res,next)=>{
-        res.render('shop/cart', {
-          pageTitle: 'Cart',
-          path: '/cart',
-        })
+  Product.fetchAll(dataFilePath, products=>{
+    res.render('shop/cart', {
+      prods: products.filter(product=>product.inCard),
+      pageTitle: 'Cart',
+      path: '/cart',
+    })
+  })
+        
      
 }
 exports.postCart = (req,res,next)=>{
@@ -59,4 +63,13 @@ exports.getProduct = (req,res,next)=>{
     })
   })
   
+}
+
+exports.deleteFromCart = (req,res,next)=>{
+  const id = req.body.cardId;
+  Product.getProductById(id,product=>{
+    console.log(product,id)
+    Cart.delete(id,  product.price)
+  })
+  res.redirect('/cart')
 }

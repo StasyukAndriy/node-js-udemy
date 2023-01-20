@@ -40,20 +40,27 @@ module.exports = class Product{
      }
      static delete(id){
         getProducts(dataFilePath, products=>{
-         
-         const newProds = products.filter(product=> product.id!=id)
-         fs.writeFile(dataFilePath, JSON.stringify(newProds), err=>{
+          const newProds = products.filter(product=> product.id!=id)
+          fs.writeFile(dataFilePath, JSON.stringify(newProds), err=>{
             console.log(err)
           })
         })
+        
+        
      }
 
-     static edit(id, title, url, price, description){
-         const editedProduct = {id, title, url, price, description}
+     static edit(statusCart, id, title, url, price, description){
+  
+
+            const editedProduct = {id, title, url, price, description}
+         
+        
          getProducts(dataFilePath,products=>{
             const newProds = products.map(product=>{
-               console.log(id, product.id)
                if(id==product.id){
+                  if(statusCart){
+                     return {...product, inCard: statusCart[0]}
+                  }
                   return editedProduct
                } 
                   return product
@@ -67,7 +74,7 @@ module.exports = class Product{
 
      static getProductById(id,cb) {
      
-          Product.fetchAll(products=>{
+          Product.fetchAll(dataFilePath, products=>{
             cb(products.find(product=>product.id==id))
          })
      }

@@ -25,6 +25,7 @@ exports.postNewProduct = (req, res, next) => {
 exports.deleteProduct = (req,res,next)=>{
   const id = getIdFromUrl(req)
   Product.delete(id)
+  console.log('second')
   res.redirect('/admin/products')
 }
 exports.getProductsAdmin = (req,res,next) =>{
@@ -52,7 +53,7 @@ exports.getEditProduct = (req,res,next)=>{
 
 exports.postEditProduct = (req,res,next)=>{
   const {title, url, price, description} = req.body
-  Product.edit(editID, title, url, price, description)
+  Product.edit(false, editID, title, url, price, description)
   res.redirect('/admin/products')
 
 }
